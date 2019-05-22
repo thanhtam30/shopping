@@ -1,0 +1,38 @@
+{
+  "name": "mernphone",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "client-install": "npm install --prefix client",
+    "start": "node server.js",
+    "server": "nodemon server.js",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "concurrently": "^4.1.0",
+    "connect-mongo": "^2.0.3",
+    "express": "^4.16.4",
+    "express-session": "^1.16.1",
+    "fingerprintjs2": "^2.0.6",
+    "install": "^0.12.2",
+    "is-empty": "^1.2.0",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.11",
+    "mongoose": "^5.5.7",
+    "multer": "^1.4.1",
+    "nodemon": "^1.19.0",
+    "npm": "^6.9.0",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "react-dropzone": "^10.1.4",
+    "react-image-gallery": "^0.8.16",
+    "react-star-ratings": "^2.3.0",
+    "validator": "^10.11.0"
+  }
+}
