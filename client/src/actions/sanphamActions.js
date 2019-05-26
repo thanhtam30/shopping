@@ -25,6 +25,18 @@ export const HienthiSP=()=>dispatch=>{
     payload:null
   }))
 }
+//Hien thi danh muc
+export const Trangchu=(page)=>dispatch=>{
+  axios.get(`/api/sanpham/trangchu/`)
+  .then(res=>dispatch({
+    type:Types.HIENTHI_SANPHAM,
+    payload:res.data
+  }))
+  .catch(err=>dispatch({
+    type:Types.HIENTHI_SANPHAM,
+    payload:null
+  }))
+}
 //xoa danh muc
 export const XoaSP=(id)=>dispatch=>{
   
@@ -38,6 +50,24 @@ export const XoaSP=(id)=>dispatch=>{
     payload:err.response.data
   }))
 }
+
+// Delete Comment
+export const xoahinhanhsp = (id, ha) => dispatch => {
+  axios
+    .delete(`/api/sanpham/Xoaha/${id}/${ha}`)
+    .then(res =>
+      dispatch({
+        type: Types.HIENTHI_SANPHAMS,
+        payload: res.data
+      })
+    )
+    .catch(err =>
+      dispatch({
+        type: Types.HIENTHI_SANPHAMS,
+        payload: null
+      })
+    );
+};
 //hien thi sanpham theo id
 export const HienThiID = id => dispatch => {
   
@@ -92,6 +122,7 @@ export const BinhLuanSP=(id,data)=>dispatch=>{
     payload:err.response.data,
   }))
 }
+
 //danh gia sao san pham
 export const DanhGiaSP=(id,data)=>dispatch=>{
   axios.post(`/api/sanpham/DanhGia/${id}`,data)

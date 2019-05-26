@@ -5,8 +5,7 @@ import isEmpty from 'is-empty';
 import {HienthiDM} from '../../actions/danhmucActions';
 import {HienThiNhaSX} from '../../actions/nhasxAction'
 import { Container, Row, Col , Button, Form, Label, Input, FormFeedback} from 'reactstrap';
-import 'react-dropzone-uploader/dist/styles.css'
-import Dropzone from 'react-dropzone-uploader'
+
     
 import {Link} from 'react-router-dom'
 class Capnhatsp extends Component {
@@ -23,6 +22,9 @@ class Capnhatsp extends Component {
             errors: {},
             files: []
         }
+        
+
+
     }
     onDeleteClick(id, ha) {
         this.props.xoahinhanhsp(id, ha);
@@ -30,31 +32,30 @@ class Capnhatsp extends Component {
     onChange=e=>{
        this.setState({ [e.target.name]: e.target.value }); 
     }
-    // onChangeHandler=event=>{
-    //     // console.log(event.target.files[0].name)
-    //     this.setState({
-    //       HinhAnh:  event.target.files
-    //     //  HinhAnh:[...this.state.HinhAnh,event.target.files]
-    //     // HinhAnh: this.state.HinhAnh.concat(event.target.files),
+    onChangeHandler=event=>{
+       
+        this.setState({
+            files:  event.target.files
+   
                 
-    //     })
-    // }
-   onChangeha=e=>{
+        })
+    }
+    deletefile(file){
     
+     const a=this.state.files.filter((e)=>e!==file);
+     
        this.setState({
-           files:e.target.files
-
+           files:a
        })
-       console.log(e.target.files)
-   }
+     }
     onSubmit=e=>{
         e.preventDefault();
-        const {TenSanPham,Gia,ChiTiet,DanhMuc,NhaSX,HinhAnh}=this.state;
-     
-        console.log(HinhAnh)
+        const {TenSanPham,Gia,ChiTiet,DanhMuc,NhaSX,files}=this.state;
+        
+      
         let formData = new FormData();
-        for(var x = 0; x<this.state.HinhAnh.length; x++) {
-            formData.append('HinhAnh', this.state.HinhAnh[x])
+        for(var x = 0; x<this.state.files.length; x++) {
+            formData.append('HinhAnh', this.state.files[x])
         }
         formData.append('TenSanPham', TenSanPham);
         formData.append('Gia', Gia);
@@ -65,7 +66,7 @@ class Capnhatsp extends Component {
      
         
             
-        // this.props.CapNhatSP(this.props.match.params.id,formData,this.props.history);
+        this.props.CapNhatSP(this.props.match.params.id,formData,this.props.history);
     }
    
     componentDidMount(){
@@ -76,7 +77,7 @@ class Capnhatsp extends Component {
         this.props.HienthiDM();
     }
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps.sanpham.sanpham)
+      
         if (nextProps.errors) {
             this.setState({ errors: nextProps.errors });
           }
@@ -99,7 +100,7 @@ class Capnhatsp extends Component {
           }
         
       }
-     
+   
     render() {
         const { errors } = this.state;
         const {sanpham}=this.props.sanpham
@@ -233,34 +234,34 @@ class Capnhatsp extends Component {
            <br/>
            <Row>
            <Col  sm='6'>
-                    <Label>Hình ảnh</Label>
+                    <Label>Upload</Label>
                 </Col>
                 <Col  sm='6'>
                 <div className='col-md-8'>
               
                                 <input type='file'
-                                    name='HinhAnh' 
+                                    name='files' 
                                     onChange={this.onChangeHandler}
                                     multiple 
-                                   className='form-control'
+                                   className='form-control' 
                                 /> 
-                                {/* {hinhanh} */}
+                               { (this.state.files && [...this.state.files].map((file,index)=>(
+       <div key={index}>
+       <img  id={index}  width='50px' height='50px' src={URL.createObjectURL(file)} />
+       <button onClick={this.deletefile.bind(this,file)}>Xoa</button>
+       </div>
+      
+        
+     )))}
                                
-                               <Dropzone
-          onChange={this.onPreviewDrop}
-
-    onChange={this.onChangeha}
-      maxFiles={3}
-      inputContent="Drop 3 Files"
-      inputWithFilesContent={files => `${3 - files.length} more`}
-      submitButtonDisabled={files => files.length < 3}
-    />
+                            
                             </div>
                           
 
                 </Col>
     
            </Row>
+         
          
            <br/>
            <Row>
