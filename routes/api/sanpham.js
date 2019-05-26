@@ -58,31 +58,56 @@ router.post('/capnhat/:id',upload.any(),(req,res)=>{
         hinhanh.push(req.files[i].originalname)
         
       }
+      
       SanPham.findById(req.params.id).then(sp=>{
-          if(typeof req.file=='undefined'){
-              sp.TenSanPham=req.body.TenSanPham;
-              sp.Gia=req.body.Gia;
-              sp.ChiTiet=req.body.ChiTiet;
-              sp.DanhMuc=req.body.DanhMuc;
-              sp.NhaSX=req.body.NhaSX
-              sp.save();
-              console.log(sp);
-              
-          }else{
+        // sp.HinhAnh= sp.HinhAnh.concat(hinhanh);
             sp.TenSanPham=req.body.TenSanPham;
             sp.Gia=req.body.Gia;
             sp.ChiTiet=req.body.ChiTiet;
             sp.DanhMuc=req.body.DanhMuc;
             sp.NhaSX=req.body.NhaSX
-            sp.HinhAnh=hinhanh;
+            sp.HinhAnh=sp.HinhAnh.concat(hinhanh)              
             sp.save();
             console.log(sp);
             
-          }
+          
 
-      })
+     })
+ 
+})
+router.post('/capnhathinhanh/:id',upload.any(),(req,res)=>{
+    SanPham.findById(req.params.id).then((sp)=>{
+            const hinhanh=[];
+    for (let i = 0; i < req.files.length; i ++) {
+        hinhanh.push(req.files[i].originalname)
+      }
+    
+
+
+     
+      const ha1=sp.HinhAnh.concat(hinhanh);;
+      sp.HinhAnh=ha1
+
+   sp.save()
+    console.log(sp)
+        //  sp.save().then(post => res.json(post));
+    })
 })
 router.delete('/xoa/:id',Xoa);
+router.delete('/Xoaha/:id/:ha',(req,res)=>{
+   
+SanPham.findById(req.params.id).then(sp=>{
+   const ha=req.params.ha;  
+  // Get remove index
+  const removeIndex = sp.HinhAnh
+  .map(item => item.toString())
+  .indexOf(req.params.ha);
+  sp.HinhAnh.splice(removeIndex, 1);
+
+  sp.save()
+  
+})
+})
 router.post('/DanhGia/:id',authenticating,(req,res)=>{
     const user=req.user.id;
     const errors={};
@@ -119,5 +144,15 @@ router.post('/Binhluan/:id',authenticating,(req,res)=>{
         console.log(sp)
 
     }).catch((console.log))
+})
+router.get('/trangchu',(req,res)=>{
+    var perpage=3;
+    var page=req.params.page ||1;
+    SanPham.find({}).populate(['NhaSX','TenNhaSX -_id'])
+    .populate(['DanhMuc','TenDanhMuc -_id'])
+    .skip((perpage*page)-page)
+    .limit(perpage).then(sp=>{
+        res.status(200).json(sp)
+    }).catch(console.log)
 })
 module.exports = router;

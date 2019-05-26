@@ -1,16 +1,19 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux'
-import {HienThiCapNhatSP,CapNhatSP} from '../../actions/sanphamActions'
+import {HienThiCapNhatSP,CapNhatSP,xoahinhanhsp} from '../../actions/sanphamActions'
 import isEmpty from 'is-empty';
 import {HienthiDM} from '../../actions/danhmucActions';
 import {HienThiNhaSX} from '../../actions/nhasxAction'
 import { Container, Row, Col , Button, Form, Label, Input, FormFeedback} from 'reactstrap';
-
-
+import 'react-dropzone-uploader/dist/styles.css'
+import Dropzone from 'react-dropzone-uploader'
+    
+import {Link} from 'react-router-dom'
 class Capnhatsp extends Component {
     constructor(props) {
         super(props);
         this.state={
+            id:'',
             TenSanPham:'',
            HinhAnh:[],
            Gia:0,
@@ -18,41 +21,51 @@ class Capnhatsp extends Component {
             DanhMuc:'',
             NhaSX:'',
             errors: {},
-            
+            files: []
         }
     }
-   
+    onDeleteClick(id, ha) {
+        this.props.xoahinhanhsp(id, ha);
+      }
     onChange=e=>{
-       
-              this.setState({ [e.target.name]: e.target.value });
-        
+       this.setState({ [e.target.name]: e.target.value }); 
     }
-    onChangeHandler=event=>{
-        console.log(event.target.files[0].name)
-        this.setState({
-        //  HinhAnh:  event.target.files
-         HinhAnh:[...this.state.HinhAnh,event.target.files[0].name]
-        })
-    }
+    // onChangeHandler=event=>{
+    //     // console.log(event.target.files[0].name)
+    //     this.setState({
+    //       HinhAnh:  event.target.files
+    //     //  HinhAnh:[...this.state.HinhAnh,event.target.files]
+    //     // HinhAnh: this.state.HinhAnh.concat(event.target.files),
+                
+    //     })
+    // }
+   onChangeha=e=>{
+    
+       this.setState({
+           files:e.target.files
+
+       })
+       console.log(e.target.files)
+   }
     onSubmit=e=>{
         e.preventDefault();
         const {TenSanPham,Gia,ChiTiet,DanhMuc,NhaSX,HinhAnh}=this.state;
      
         console.log(HinhAnh)
         let formData = new FormData();
-        // for(var x = 0; x<this.state.HinhAnh.length; x++) {
-        //     formData.append('HinhAnh', this.state.HinhAnh[x])
-        // }
+        for(var x = 0; x<this.state.HinhAnh.length; x++) {
+            formData.append('HinhAnh', this.state.HinhAnh[x])
+        }
         formData.append('TenSanPham', TenSanPham);
         formData.append('Gia', Gia);
-        formData.append('HinhAnh', HinhAnh);
+        // formData.append('HinhAnh', HinhAnh);
         formData.append('ChiTiet', ChiTiet);
         formData.append('DanhMuc', DanhMuc);
         formData.append('NhaSX', NhaSX);
      
         
             
-        this.props.CapNhatSP(this.props.match.params.id,formData,this.props.history);
+        // this.props.CapNhatSP(this.props.match.params.id,formData,this.props.history);
     }
    
     componentDidMount(){
@@ -89,6 +102,7 @@ class Capnhatsp extends Component {
      
     render() {
         const { errors } = this.state;
+        const {sanpham}=this.props.sanpham
         const {danhmuc}=this.props.danhmuc
         const optiondm=  (this.props && this.props.danhmuc.danhmuc &&this.props.danhmuc.danhmuc.length) > 0 ?this.props.danhmuc.danhmuc.map((exp,index) => {
             
@@ -100,10 +114,22 @@ class Capnhatsp extends Component {
             
             return <option value={exp._id} key={index}>{exp.TenNhaSX} </option>
         }):<option/>
-    //    const hinhanh= (this.state && this.state.HinhAnh &&this.state.HinhAnh.length) > 0 ?this.state.HinhAnh.map((ha,index) => {
-    //     return   <img key={index} src={ha} width='50px' height='50px'/>
-    //    }):<img/>
+        ;
+        const id=this.props.match.params.id
+       const hinhanh= (this.state && this.state.HinhAnh &&this.state.HinhAnh.length) > 0 ?this.state.HinhAnh.map((file,index) => {
+        return    <td key={index}>
+    <img src={file}  width='50px' height='50px'/> 
         
+              {/* <Link to={`/Xoaha/${this.props.match.params.id}/${ha}`}>Xoa </Link> */}
+              
+              <Link  onClick={this.onDeleteClick.bind(this,id,file)}>Xóa</Link>
+
+        
+      </td>
+        
+                    
+       }):<td/>
+      
         return (
             
           <div>
@@ -219,15 +245,16 @@ class Capnhatsp extends Component {
                                    className='form-control'
                                 /> 
                                 {/* {hinhanh} */}
-{/*                                
+                               
                                <Dropzone
-      name='HinhAnh'
-      onChange={this.onChangeHandler}
+          onChange={this.onPreviewDrop}
+
+    onChange={this.onChangeha}
       maxFiles={3}
       inputContent="Drop 3 Files"
       inputWithFilesContent={files => `${3 - files.length} more`}
       submitButtonDisabled={files => files.length < 3}
-    /> */}
+    />
                             </div>
                           
 
@@ -235,6 +262,11 @@ class Capnhatsp extends Component {
     
            </Row>
          
+           <br/>
+           <Row>
+                <Col sm={4}>Hinh anh</Col>
+                <Col sm={8}>{hinhanh}</Col>
+           </Row>
            <br/>
            <Row>
            
@@ -255,4 +287,4 @@ const mapStateToProps = (state) => {
         nhasx:state.nhasx
     }
 }
-export default connect(mapStateToProps,{HienThiCapNhatSP,HienThiNhaSX,HienthiDM,CapNhatSP})(Capnhatsp);
+export default connect(mapStateToProps,{HienThiCapNhatSP,HienThiNhaSX,HienthiDM,CapNhatSP,xoahinhanhsp})(Capnhatsp);
